@@ -296,12 +296,13 @@ def filtrar_datos(df, dicc):
             print(f"\nEl ticker '{clave}' no se encuentra disponible \n")
     print (f'\n-----------------------------\033[1mFILTRANDO EMPRESAS\033[0m-----------------------------\n')
     
-    # Creamos el diccionario con los ratios y sus respectivos calores filtrados
+    # Creamos el diccionario con los ratios y sus respectivos valores filtrados
     first_summ_dict = {}
     for diccionario in summary_list:
         first_summ_dict.update(diccionario)
     summary_dict = {'Ratios filtrados':first_summ_dict}
     summary_filter_list = [dicc_filtrado, summary_dict]
+    
     return summary_filter_list
 
 def modulo1():

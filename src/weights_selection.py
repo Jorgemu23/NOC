@@ -1,4 +1,4 @@
-# Version # 1.1
+# Version # 1.2
 
 from ratio_filter import get_ratios_db, get_sectors_db, filtrar_datos
 from pprint import pprint
@@ -305,28 +305,30 @@ def strategy_pred_model(feature):
     return prediccion_estrategia_RF2
 
 ################################################################################################################################
+def portfolio_allocation (companies, summary):
+    '''
+    Versión gratitua.
 
-if __name__ == "__main__":
+    companies: una lista o diccionario con los tickers de las empresas a inviertir-
 
+    El usuario decide si queire eliminar o añadir mas empresas al input, se pregunta al usuario que modelo desea utilizar: 'Sharpe','Utility','MinRisk','MaxRet'
+    un valor para medir la adversión al reisgo, y el peso máximo que puede tener cada activo en la cartera. 
 
-# ##############A PARTIR DE AQUI ESTE MODULO#####################################################   
-    output_m2= modulo2()
-    if len(output_m2)==1:
-        pass
-    else: 
-        filtered_companies = output_m2[0]
-        n = len(filtered_companies)
+    Devuelve un portfolio en función de los tickers ingresados y la configuración establecida.                           
+    '''
+    n = len(companies)
+    if n >0:
         if n >= 20:
             print("\n")
             print('\033[1;97;41mWARNING: CON UN NUMERO ELEVADO DE ACTIVOS ES POSIBLE QUE NO SE PUEDA CONSTRUIR LA CARTERA OPTIMA\033[0m')
-            final_tk_list  = get_final_companies(filtered_companies)
+            final_tk_list  = get_final_companies(companies)
             df_close = get_close(final_tk_list)
             n = len(final_tk_list)
             returns = np.log(df_close).diff().dropna()
             mu = np.mean(returns.to_numpy(),axis=0).reshape(1, n)
             Sigma = np.cov(returns.to_numpy().T)
         else:
-            final_tk_list  = get_final_companies(filtered_companies)
+            final_tk_list  = get_final_companies(companies)
             df_close = get_close(final_tk_list)
             n = len(final_tk_list)
             returns = np.log(df_close).diff().dropna()
@@ -335,9 +337,8 @@ if __name__ == "__main__":
         print('\n\033[1m----------Configuración para la asiganción de recursos----------\033[0m')
         
         print(f'\nEl rango temporal para hacer los calculos es: \n\n{returns.index[0].date()} - {returns.index[-1].date()}')
-       
+        
         while True:
-        #try:
             print('\n\033[1m¿Desea que la estrategia del portfolio la seleccione los modelos de Machine Learning?\033[0m\n')
             user_decision=  input('Escriba si o no | ')
             user_decision = user_decision.lower()
@@ -376,8 +377,6 @@ if __name__ == "__main__":
                     break
                 else: 
                     print("\nEl valor ingresado no es válido.")
-        # except ValueError:
-        #     print("\nEl valor ingresado no es válido.")
 
         print('\n\033[1mTeniendo en cuenta las siguientes consideraciones para medir la adversión al riesgo (A):\033[0m')
         print("---------------------------------------------------------------------------------------------------------------------")
@@ -398,7 +397,7 @@ if __name__ == "__main__":
                 break
             except: 
                 print("\n El valor ingresado no es válido. Por favor, ingrese un número. \n")
-    
+
         while True:
             try: 
                 user_ulong = float(input("\nIngrese el peso máximo que se pueda asignar a cada activo (0-1): "))
@@ -429,31 +428,64 @@ if __name__ == "__main__":
         print("\nEl ratio de Sharpe del portafolio es: ", '{:,.6}'.format(port_ret/port_risk))
         print("")
         print("\033[1mEl portafolio NOC:\033[0m ")
-        pprint(final_portfolio) # Esto devuelve el API
+        #pprint(final_portfolio) # Esto devuelve el API
 
-        # Establecer el estilo del gráfico
-        style.use('ggplot')
+        graficar = input(f'¿Desea observar un gráfico con la distribución de los pesos? (Escriba si o no) |')
+        try:
+            if graficar.lower() == 'si': 
 
-        # Definir el tamaño de la figura
-        fig = plt.figure(figsize=(8, 8))
+                # Establecer el estilo del gráfico
+                style.use('ggplot')
 
-        # Definir las leyendas con los nombres de las empresas
-        leyendas = Portafolio_NOC.columns.tolist()
+                # Definir el tamaño de la figura
+                fig = plt.figure(figsize=(8, 8))
 
-        # Trazar el gráfico de pastel
-        patches, texts, autotexts = plt.pie(Portafolio_NOC.iloc[0].values,   
-                                            labels=leyendas, autopct='%1.1f%%', pctdistance=0.8)
+                # Definir las leyendas con los nombres de las empresas
+                leyendas = Portafolio_NOC.columns.tolist()
 
-        # Personalizar el texto de los valores
-        for autotext in autotexts:
-            autotext.set_color('black')
-            autotext.set_fontsize(12)
+                # Trazar el gráfico de pastel
+                patches, texts, autotexts = plt.pie(Portafolio_NOC.iloc[0].values,   
+                                                    labels=leyendas, autopct='%1.1f%%', pctdistance=0.8)
 
-        # Añadir leyenda
-        plt.legend(title='Empresas', loc='center left', bbox_to_anchor=(1, 0.5))
+                # Personalizar el texto de los valores
+                for autotext in autotexts:
+                    autotext.set_color('black')
+                    autotext.set_fontsize(12)
 
-        # Añadir título
-        plt.title('Distribución de los pesos por empresa NOC', fontsize=18)
+                # Añadir leyenda
+                plt.legend(title='Empresas', loc='center left', bbox_to_anchor=(1, 0.5))
 
-        # Mostrar el gráfico
-        plt.show()   
+                # Añadir título
+                plt.title('Distribución de los pesos por empresa NOC', fontsize=18)
+
+                # Mostrar el gráfico
+                plt.show()
+            else:
+                pass
+        except:
+            print ('Por favor, escriba si o no.')
+
+        summary_mod2 = summary['Resumen']    
+        summary_portfolio_feautres = {'Caracteristicas cartera': {"Objetivo":objective,
+                                                        'Adversión al riesgo': A,
+                                                        "Peso max":upperlong}
+                            }
+        summary_mod2.update(summary_portfolio_feautres)
+        summary['Resumen'] = summary_mod2
+
+        portfolio_summary = [final_portfolio, summary]
+
+        return portfolio_summary
+    else:
+
+        return(print('No hay empresas para calcular el protfolio'))
+
+# ##############A PARTIR DE AQUI ESTE MODULO#####################################################  
+if __name__ == "__main__":
+    output_m2 = modulo2()
+    companies = output_m2[0]
+    summary = output_m2[1]
+    porfolio_summary = portfolio_allocation(companies, summary)
+    print(f'El portfolio es {porfolio_summary[0]}')
+    print(f'El resumen para obtener el portfolio es {porfolio_summary[1]}')
+

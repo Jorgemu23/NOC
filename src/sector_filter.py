@@ -1,4 +1,4 @@
-# Version # 1.1
+# Version # 1.2
 
 from ratio_filter import get_ratios_db, get_sectors_db, filtrar_datos, modulo1
 from pprint import pprint
@@ -48,7 +48,7 @@ def sector_filter(interest_companies, sector_num_dict, summary):
                     print("\nEl valor ingresado no es válido. Por favor, ingrese un número")
 
             if len(interes_sectors)>0:
-                resumen = (input("\n¿Deseaun resumen de los ratios filtrados? (Escriba 'si' o 'no') | "))
+                resumen = (input("\n¿Deseaun resumen de los sectores filtrados? (Escriba 'si' o 'no') | "))
                 if resumen.lower() == 'si':
                     print("")
                     for sector in interes_sectors:
@@ -125,46 +125,5 @@ def modulo2():
     return final_companies
 #######################################################################################################################################################
 if __name__ == "__main__":
-
-    # mongo_uri= os.environ['mongo_uri']
-
-    # ratios = get_ratios_db(uri = mongo_uri, DB_name= 'Proyect', collection_name='SP500_RATIOS')
-    # data_date = ratios['_id']
-    # data_date = time.strftime('%d/%m/%Y', time.localtime(data_date))
-    # print(f'\nFecha de la obtención de datos: {data_date}\n') # mostramos la fecha en la que se han obtenido los datos
-    # del ratios['_id'] 
-
-    # # guardamos los ratios en un df 
-    # df_ratios = pd.DataFrame(ratios)
-    # df_ratios.replace([np.inf, -np.inf], np.nan, inplace=True) # Reemplazamos los valores infinitos por NaN
-
-    # # Obtenemos los componentes de los sectores del DB 
-    # company_sector_dict = get_sectors_db(uri = mongo_uri, DB_name= 'Proyect', collection_name='SECTOR_COMPONENTS')
-
-    # # Guardamos los ticker que no estan guardados en el DB ratios y avisamos al usuario que tickers no están disponibles
-    # tickers_faltantes = set(company_sector_dict.keys()).difference(set(df_ratios.columns))
-
-    # print(f"Los siguientes tickers no se encuentran disponibles para realizar el filtrado: \n")
-    # print(f'{sorted(tickers_faltantes)}')
-
-    # # Invocamos la función para realizar el filtrado
-    
-    # filtered_tckr = modulo1()[0]
-    # ratios_summary = modulo1()[1]
-
-    # number_of_sector = get_number_sectors(sector_dict = company_sector_dict)
-
-    # simulated_output = sample(range(0,len(number_of_sector)),len(number_of_sector))
-
-    # print(f'\n\033[1mRanking simulado\033[0m')
-    # print("----------------------------------------------------------------------")
-    # for r, P in enumerate(simulated_output):
-    #     pos = (r+1)
-    #     print(f'\033[1m{r+1})\033[0m {number_of_sector[P]} (clave:{P})')
-    # print("----------------------------------------------------------------------")
-
-    # final_companies = sector_filter(filtered_tckr, number_of_sector, ratios_summary)
-
-    # pprint (final_companies)
 
     print(modulo2())
