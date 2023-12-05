@@ -495,9 +495,8 @@ def modulo3(portfolio, summary):
     pprint(portfolio)
     print('\nEl resumen para obtener el portfolio es:')
     pprint(summary['Resumen'])
-
-    print('\n¿Desea guardar el portfolio en la base de datos?')
-    save_portfolio = input('Escriba si o no | ')
+    
+    save_portfolio = input('\n¿Desea guardar el portfolio en la base de datos? (Escriba si o no) | ')
 
     if save_portfolio == 'si':
         timestamp = int(time.time())
