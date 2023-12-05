@@ -1,4 +1,4 @@
-# Version # 1.2
+# Version # 1.3
 
 from ratio_filter import get_ratios_db, get_sectors_db, filtrar_datos
 from pprint import pprint
@@ -16,6 +16,7 @@ from full_fred.fred import Fred
 import time
 from datetime import datetime, timedelta
 import os 
+from pymongo import MongoClient
 warnings.filterwarnings("ignore")
 # librerias para probar modelo en local
 from keras.models import load_model
@@ -225,8 +226,8 @@ def get_macro_features():
     '''
     Call API FRED and get the features for the economic model
     '''
-    fred = Fred(os.environ['fred_key'])
-    fred.set_api_key_file(os.environ['fred_key'])
+    fred = Fred('fredkey.txt')
+    fred.set_api_key_file('fredkey.txt')
     df = pd.DataFrame()
     current_date = datetime.now()
     time_ago = current_date - timedelta(days=300)
@@ -309,7 +310,8 @@ def portfolio_allocation (companies, summary):
     '''
     Versión gratitua.
 
-    companies: una lista o diccionario con los tickers de las empresas a inviertir-
+    companies: una lista o diccionario con los tickers de las empresas a inviertir.
+    Summary: un resumen de los modulos anteriores
 
     El usuario decide si queire eliminar o añadir mas empresas al input, se pregunta al usuario que modelo desea utilizar: 'Sharpe','Utility','MinRisk','MaxRet'
     un valor para medir la adversión al reisgo, y el peso máximo que puede tener cada activo en la cartera. 
@@ -427,7 +429,7 @@ def portfolio_allocation (companies, summary):
         print("\nLa desviación estándar del portafolio es: ", '{:,.2%}'.format(port_risk))
         print("\nEl ratio de Sharpe del portafolio es: ", '{:,.6}'.format(port_ret/port_risk))
         print("")
-        print("\033[1mEl portafolio NOC:\033[0m ")
+        print("\n\033[1mEl portafolio NOC:\033[0m ")
         #pprint(final_portfolio) # Esto devuelve el API
 
         graficar = input(f'¿Desea observar un gráfico con la distribución de los pesos? (Escriba si o no) |')
@@ -466,9 +468,10 @@ def portfolio_allocation (companies, summary):
             print ('Por favor, escriba si o no.')
 
         summary_mod2 = summary['Resumen']    
-        summary_portfolio_feautres = {'Caracteristicas cartera': {"Objetivo":objective,
-                                                        'Adversión al riesgo': A,
-                                                        "Peso max":upperlong}
+        summary_portfolio_feautres = {'Caracteristicas cartera': {#'IA':user_decision,
+                                                                  "Objetivo":objective,
+                                                                  'Adversión al riesgo': A,
+                                                                  "Peso max":upperlong}
                             }
         summary_mod2.update(summary_portfolio_feautres)
         summary['Resumen'] = summary_mod2
@@ -480,12 +483,54 @@ def portfolio_allocation (companies, summary):
 
         return(print('No hay empresas para calcular el protfolio'))
 
+def modulo3(portfolio, summary):
+    '''
+    portfolio: el porfolio obtenido de la funcion portfolio_allocation.
+    summary: el resumen obtenido de la funcion portfolio_allocation.
+
+    Se le pregunta al usuario si desea guardar el portfolio en la base de datos, en caso de afirmativo se devuelve el ID del documento (el porfolio y el resumen),
+    en caso contrario, devuelve una lista con el porfolio y el resumen. 
+    '''
+    print('\nEl portfolio es:')
+    pprint(portfolio)
+    print('\nEl resumen para obtener el portfolio es:')
+    pprint(summary['Resumen'])
+
+    print('\n¿Desea guardar el portfolio en la base de datos?')
+    save_portfolio = input('Escriba si o no | ')
+
+    if save_portfolio == 'si':
+        timestamp = int(time.time())
+        final_dict = {'Fecha':timestamp,
+                      'Portfolio': portfolio,}
+        final_dict.update(summary)
+        uri = os.environ['mongo_uri']
+        client = MongoClient(uri)
+        db = client['Proyect']
+        collection = db['Portfolios']
+        result = collection.insert_one(final_dict)
+        inserted_id = result.inserted_id
+        print(f"\nEl ID de su portfolio es: {inserted_id}")
+        
+        return inserted_id
+    
+    else:
+        print('\nEl portfolio no se ha guardado en la base de datos')
+
+        return [portfolio, summary]
+
+
 # ##############A PARTIR DE AQUI ESTE MODULO#####################################################  
 if __name__ == "__main__":
     output_m2 = modulo2()
     companies = output_m2[0]
     summary = output_m2[1]
     porfolio_summary = portfolio_allocation(companies, summary)
-    print(f'El portfolio es {porfolio_summary[0]}')
-    print(f'El resumen para obtener el portfolio es {porfolio_summary[1]}')
+    # print('\nEl portfolio es el siguiente:')
+    # pprint(porfolio_summary[0])
+    # print('\nEl resumen para obtener el portfolio es el siguiente:')
+    # pprint(porfolio_summary[1]['Resumen'])
 
+    resultado = modulo3(porfolio_summary[0], porfolio_summary[1])
+
+    print(f'\n{resultado}')
