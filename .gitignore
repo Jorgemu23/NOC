@@ -161,3 +161,4 @@ cython_debug/
 
 # fred key
 fredkey.txt
+tests.ipynb_checkpoints
