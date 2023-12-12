@@ -483,7 +483,7 @@ def portfolio_allocation (companies, summary):
 
         return(print('No hay empresas para calcular el protfolio'))
 
-def modulo3(portfolio, summary):
+def save_portfolio(portfolio, summary):
     '''
     portfolio: el porfolio obtenido de la funcion portfolio_allocation.
     summary: el resumen obtenido de la funcion portfolio_allocation.
@@ -518,18 +518,20 @@ def modulo3(portfolio, summary):
 
         return [portfolio, summary]
 
-
-# ##############A PARTIR DE AQUI ESTE MODULO#####################################################  
-if __name__ == "__main__":
+def modulo3():
     output_m2 = modulo2()
     companies = output_m2[0]
     summary = output_m2[1]
     porfolio_summary = portfolio_allocation(companies, summary)
-    # print('\nEl portfolio es el siguiente:')
-    # pprint(porfolio_summary[0])
-    # print('\nEl resumen para obtener el portfolio es el siguiente:')
-    # pprint(porfolio_summary[1]['Resumen'])
+    resultado = save_portfolio(porfolio_summary[0], porfolio_summary[1])
+    return resultado
 
-    resultado = modulo3(porfolio_summary[0], porfolio_summary[1])
-
-    print(f'\n{resultado}')
+# ##############A PARTIR DE AQUI ESTE MODULO#####################################################  
+if __name__ == "__main__":
+#     output_m2 = modulo2()
+#     companies = output_m2[0]
+#     summary = output_m2[1]
+#     porfolio_summary = portfolio_allocation(companies, summary)
+#     resultado = save_portfolio(porfolio_summary[0], porfolio_summary[1])
+    id_port = modulo3()
+    print(f'\n{id_port}')
