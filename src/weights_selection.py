@@ -1,4 +1,4 @@
-# Version # 1.3
+# Version # 1.4
 
 from ratio_filter import get_ratios_db, get_sectors_db, filtrar_datos
 from pprint import pprint
