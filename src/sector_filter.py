@@ -6,7 +6,8 @@ from pymongo import MongoClient, DESCENDING
 import pandas as pd
 import numpy as np
 import time 
-import os 
+import os
+
 
 def get_number_sectors(sector_dict):
     '''
