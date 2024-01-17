@@ -220,7 +220,7 @@ def get_close(list_interes_tk):
         price_dicct[tk] = df.adjclose
     df_close = pd.DataFrame(price_dicct)
     return df_close
-# ontemeos los indices macro economicos mas recientes y los preprocesamos
+# obtemeos los indices macro economicos mas recientes y los preprocesamos
 
 def get_macro_features():
     '''
@@ -408,7 +408,7 @@ def portfolio_allocation (companies, summary):
                 bins = 20
                 obj_W0 = objective
                 w0 = MV_portfolio(mu, Sigma, 0, objective, A, upperlong)
-                w_noc = MV_NOC(mu, Sigma, w0, obj_W0, 0, upperlong, bins)
+                w_noc = MV_NOC(mu, Sigma, w0, obj_W0, 0, upperlong, A, bins) # OJO SE HA AÑADIDO A
                 break
             except AttributeError:
                 print(f'\nCon un peso máximo de {upperlong}, no es posible construir una cartera')
