@@ -104,3 +104,4 @@ Werkzeug==2.3.6
 wrapt==1.15.0
 yahoo-fin==0.8.9.1
 zipp==3.15.0
+
