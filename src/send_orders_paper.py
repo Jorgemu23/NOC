@@ -177,6 +177,7 @@ def send_alloc_paper():
         pass
 
 if __name__ == "__main__":
+    print('\n')
     crear_cartera_user = input('¿Desea crear una cartera? (Escriba si o no) | ')
     if crear_cartera_user.lower() =='si':
         modulo3()
