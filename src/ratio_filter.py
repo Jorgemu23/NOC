@@ -7,15 +7,17 @@ import numpy as np
 import warnings
 from tabulate import tabulate
 import time
-from dotenv import load_dotenv 
 import os
+import sys
+from pathlib import Path
 warnings.filterwarnings('ignore', '.*Boolean Series key will be reindexed.*')
-load_dotenv(override=True)  
-
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+import config 
 # Funciones para esblecer Conexión a MongoDB Atlas
 def get_ratios_db (uri, DB_name, collection_name):
     '''
     '''
+    
     uri = uri
     client = MongoClient(uri)
     db = client[DB_name]
@@ -308,6 +310,7 @@ def filtrar_datos(df, dicc):
     return summary_filter_list
 
 def modulo1():
+        
         mongo_uri= os.getenv('mongo_uri')
         ratios = get_ratios_db(uri = mongo_uri, DB_name= 'Proyect', collection_name='SP500_RATIOS')
         data_date = ratios['_id']

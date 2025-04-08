@@ -6,8 +6,11 @@ from pymongo import MongoClient, DESCENDING
 import pandas as pd
 import numpy as np
 import time 
+import sys
+from pathlib import Path
 import os
-
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+import config 
 
 def get_number_sectors(sector_dict):
     '''
@@ -83,7 +86,8 @@ def sector_filter(interest_companies, sector_num_dict, summary):
         return (summary)
     
 def modulo2():
-    mongo_uri= os.environ['mongo_uri']
+  
+    mongo_uri= os.getenv('mongo_uri')
 
     ratios = get_ratios_db(uri = mongo_uri, DB_name= 'Proyect', collection_name='SP500_RATIOS')
     data_date = ratios['_id']
