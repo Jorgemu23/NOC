@@ -5,7 +5,7 @@ from pprint import pprint
 import pandas as pd
 import numpy as np
 from sector_filter import get_number_sectors, sector_filter, modulo2
-from yahoo_fin.stock_info import get_data, get_stats
+from yfinance import download, Ticker
 import cvxpy as cv 
 import matplotlib.pyplot as plt
 import matplotlib.style as style
@@ -16,13 +16,16 @@ from full_fred.fred import Fred
 import time
 from datetime import datetime, timedelta
 import os 
+import sys
+from pathlib import Path
 from pymongo import MongoClient
 warnings.filterwarnings("ignore")
 # librerias para probar modelo en local
 from keras.models import load_model
 import joblib
 from sklearn.preprocessing import StandardScaler
-
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+import config 
 
 # mu: Un array con las tasas esperadas de retorno de cada activo.
 # Sigma: Una matriz de covarianzas de los activos.
@@ -187,13 +190,17 @@ def get_final_companies(interes_companies):
             elif user_option == 1:
                 new_asset = input("\nIntroduzca el ticker que desea añadir: ")
                 try: 
-                    get_stats(new_asset)
+                    data = download(new_asset, auto_adjust=True)
+                    if data.empty:
+                        raise ValueError("Ticker no disponible o sin datos")
+                    #get_stats(new_asset)
                     list_interes_tk.append(new_asset)
                     #print(f"\nEl ticker {new_asset} se ha agregado a la lista de activos de interés.\n")
                     print('\033[1;32m' + f"\nEl ticker {new_asset} se ha agregado a la lista de activos de interés.\n" + '\033[0m')
 
                 except:
-                    print(f'\nEl ticker {new_asset} no está disponible.\n')
+                    print('\033[1;31m' + f'\nEl ticker {new_asset} no está disponible o es incorrecto.\n' + '\033[0m')
+
             elif user_option == 2:
                 del_asset = input("\nIntroduzca el ticker que desea eliminar: ")
                 if del_asset in list_interes_tk:
@@ -215,11 +222,12 @@ def get_close(list_interes_tk):
     #start = '2010-01-01'
     price_dicct = {}
     for tk in list_interes_tk:
-        df = get_data(tk)
+        df = download(tk, auto_adjust=True)
                       #, start_date= start)
-        price_dicct[tk] = df.adjclose
+        price_dicct[tk] = df.Close[tk]
     df_close = pd.DataFrame(price_dicct)
     return df_close
+
 # obtemeos los indices macro economicos mas recientes y los preprocesamos
 
 def get_macro_features():
@@ -503,14 +511,14 @@ def save_portfolio(portfolio, summary):
         final_dict = {'Fecha':timestamp,
                       'Portfolio': portfolio,}
         final_dict.update(summary)
-        uri = os.environ['mongo_uri']
+        uri = os.getenv('mongo_uri')
         client = MongoClient(uri)
         db = client['Proyect']
         collection = db['Portfolios']
         result = collection.insert_one(final_dict)
         inserted_id = result.inserted_id
         print(f"\nEl ID de su portfolio es: {inserted_id}")
-        
+
         return inserted_id
     
     else:
