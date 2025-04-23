@@ -5,10 +5,14 @@ from alpaca_trade_api.rest import REST, TimeFrame
 from alpaca_trade_api.stream import Stream
 import random 
 import os 
+import sys
+from pathlib import Path
 from weights_selection import modulo3
 from time import sleep
 from send_orders_paper import get_portfolio_db
 import time
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+import config 
 
 def _alpaca_symbols_to_close(alpaca_positions, portfolio_symbols):
     '''
@@ -138,7 +142,7 @@ def alpaca_rebalance():
     SECRET_KEY = user__secret_api_key
 
     alpaca = REST(API_KEY, SECRET_KEY, 'https://paper-api.alpaca.markets')
-    mongo_uri = os.environ['mongo_uri']
+    mongo_uri = os.getenv('mongo_uri')
     uri = mongo_uri
     DB_name= 'Proyect'
     collection_name='Portfolios'

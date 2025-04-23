@@ -5,8 +5,12 @@ from alpaca_trade_api.rest import REST, TimeFrame
 from alpaca_trade_api.stream import Stream
 import random 
 import os 
+import sys
+from pathlib import Path
 from weights_selection import modulo3
 import time
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+import config 
 # Funcion para esblecer Conexión a MongoDB Atlas
 def get_portfolio_db(uri, DB_name, collection_name, portfolio_id):
     '''
@@ -48,7 +52,7 @@ def send_alloc_paper():
         SECRET_KEY = user__secret_api_key
 
         rest_api = REST(API_KEY, SECRET_KEY, 'https://paper-api.alpaca.markets')
-        mongo_uri = os.environ['mongo_uri']
+        mongo_uri = os.getenv('mongo_uri')
         uri = mongo_uri
         DB_name= 'Proyect'
         collection_name='Portfolios'
